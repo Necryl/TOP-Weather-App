@@ -7,3 +7,14 @@
 .hide {
   display: none !important;
 }
+
+body {
+  background-color: rgb(70, 169, 199);
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "I C"
+    "F F"
+    "D D";
+}

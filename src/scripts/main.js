@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import mainStyles from "./../styles/main.css";
+import inputStyles from "./../styles/input.css";
+import currentStyles from "./../styles/current.css";
+import forecastStyles from "./../styles/forecast.css";
+import detailsStyles from "./../styles/details.css";
 
 // elements
 const loadingTextElem = document.querySelector("h1");
