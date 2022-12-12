@@ -65,7 +65,7 @@
     "O O"
     "U G"
     "L L";
-  gap: 10px;
+  gap: 20px;
 }
 
 #options > span {
@@ -147,4 +147,22 @@
 
 #toggle-loc-type {
   grid-area: L;
+  justify-self: stretch;
+  display: grid;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#toggle-loc-type span {
+  text-align: center;
+  border: 1px solid white;
+  padding: 0.2em 0.6em;
+  border-radius: 0.3em;
+}
+
+#toggle-loc-type input:checked ~ span {
+  background-color: white;
+  color: black;
+  mix-blend-mode: screen;
 }
