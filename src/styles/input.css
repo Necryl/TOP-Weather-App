@@ -2,41 +2,74 @@
   grid-area: I;
 
   position: relative;
-  height: 30px;
-  width: 200px;
 }
 
 #input-wrapper {
   background-color: rgb(207, 27, 57);
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   position: absolute;
   display: grid;
+  gap: 10px;
 
   transition: all 100ms;
 }
 
 #input-wrapper:is(:hover, :focus-within) {
-  padding: 0rem var(--pad) var(--pad) 0rem;
+  padding: calc(var(--pad) * var(--secondaryPaddingMultiplier)) var(--pad)
+    var(--pad) calc(var(--pad) * var(--secondaryPaddingMultiplier));
   border-radius: 0rem calc(var(--radius) * var(--secondaryRadiusMultiplier))
     var(--radius) calc(var(--radius) * var(--secondaryRadiusMultiplier));
 
-  --pad: 5rem;
-  --radius: 13rem;
-  --secondaryRadiusMultiplier: 0.1;
+  --pad: 3.5em;
+  --radius: 60%;
+  --secondaryRadiusMultiplier: 0.2;
+  --secondaryPaddingMultiplier: 0.1;
 }
 
-#input-wrapper:not(:is(:hover, :focus-within)) *:not(#name, .search-wrapper) {
+#input-wrapper:not(:is(:hover, :focus-within))
+  *:not(#name, #nameLabel, .search-wrapper) {
   display: none;
+  padding: 0%;
 }
 
 .search-wrapper {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-auto-flow: column;
+  gap: 0.5em;
+}
+
+#nameLabel {
+  display: grid;
+  position: relative;
+}
+
+#nameLabel::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-origin: right bottom;
+  scale: 150%;
+}
+
+#name {
+  font-size: inherit;
+  min-width: none;
 }
 
 #options {
   display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "O O"
+    "U G"
+    "L L";
+  gap: 10px;
+}
+
+#options > span {
+  grid-area: O;
 }
 
 .toggle {
@@ -46,7 +79,7 @@
   justify-content: start;
 }
 
-.toggle * {
+#options * {
   user-select: none;
 }
 
@@ -63,6 +96,10 @@
 
 .toggleGraphics > span {
   width: max-content;
+}
+
+#toggle-units {
+  grid-area: U;
 }
 
 #toggle-units .toggleGraphics span {
@@ -87,7 +124,7 @@
   width: 1.3em;
   text-align: center;
 
-  background-color: aqua;
+  background-color: rgb(130, 230, 38);
   color: black;
 
   font-size: 1.2rem;
@@ -102,4 +139,12 @@
 #toggle-units input:checked ~ .toggleGraphics::after {
   content: "C";
   translate: 1.1em;
+}
+
+#localBtn {
+  grid-area: G;
+}
+
+#toggle-loc-type {
+  grid-area: L;
 }

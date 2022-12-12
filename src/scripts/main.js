@@ -8,6 +8,7 @@ import detailsStyles from "./../styles/details.css";
 
 // elements
 const inputSectionElem = document.querySelector("#input");
+const inputWrapperElem = document.querySelector("#input-wrapper");
 const nameInputElem = document.querySelector("#name");
 const latLonContainerElem = document.querySelector("#lat-lon-container");
 const latInputElem = document.querySelector("#lat");
@@ -123,6 +124,9 @@ async function fetchWeather(lat, lon) {
 // events
 
 // run on start
+inputSectionElem.style.height = `${inputWrapperElem.clientHeight}px`;
+inputSectionElem.style.width = `${inputWrapperElem.clientWidth}px`;
+
 loader.run([
   async () => {
     const [coords] = await convertToCoordinates("london");
