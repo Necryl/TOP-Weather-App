@@ -69,7 +69,7 @@
   font-size: 1rem;
   background-color: white;
   color: rgba(0, 0, 0, 0.753);
-  padding: 1px 8px;
+  padding: 1px 7px;
 
   --radius: 5px;
 }
@@ -95,8 +95,8 @@
   padding: 0.1rem 0rem;
   border-radius: 5px;
 
-  translate: 0.2em;
-  transition: translate 100ms ease-out;
+  translate: 0.1em;
+  transition: translate 50ms ease-out;
 }
 
 #toggle-units input:checked ~ .toggleGraphics::after {
