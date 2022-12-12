@@ -1,4 +1,105 @@
 #input {
   grid-area: I;
+
+  position: relative;
+  height: 30px;
+  width: 200px;
+}
+
+#input-wrapper {
   background-color: rgb(207, 27, 57);
+  color: white;
+  font-size: 1.5rem;
+  position: absolute;
+  display: grid;
+
+  transition: all 100ms;
+}
+
+#input-wrapper:is(:hover, :focus-within) {
+  padding: 0rem var(--pad) var(--pad) 0rem;
+  border-radius: 0rem calc(var(--radius) * var(--secondaryRadiusMultiplier))
+    var(--radius) calc(var(--radius) * var(--secondaryRadiusMultiplier));
+
+  --pad: 5rem;
+  --radius: 13rem;
+  --secondaryRadiusMultiplier: 0.1;
+}
+
+#input-wrapper:not(:is(:hover, :focus-within)) *:not(#name, .search-wrapper) {
+  display: none;
+}
+
+.search-wrapper {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+#options {
+  display: grid;
+}
+
+.toggle {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1rem;
+  justify-content: start;
+}
+
+.toggle * {
+  user-select: none;
+}
+
+.toggle > span {
+  width: max-content;
+}
+
+.toggleGraphics {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  position: relative;
+}
+
+.toggleGraphics > span {
+  width: max-content;
+}
+
+#toggle-units .toggleGraphics span {
+  font-size: 1rem;
+  background-color: white;
+  color: rgba(0, 0, 0, 0.753);
+  padding: 1px 8px;
+
+  --radius: 5px;
+}
+
+#toggle-units .toggleGraphics span {
+  border-radius: 0px var(--radius) var(--radius) 0px;
+}
+#toggle-units .toggleGraphics span:first-child {
+  border-radius: var(--radius) 0px 0px var(--radius);
+}
+
+#toggle-units .toggleGraphics::after {
+  content: "F";
+  position: absolute;
+  width: 1.3em;
+  text-align: center;
+
+  background-color: aqua;
+  color: black;
+
+  font-size: 1.2rem;
+
+  padding: 0.1rem 0rem;
+  border-radius: 5px;
+
+  translate: 0.2em;
+  transition: translate 100ms ease-out;
+}
+
+#toggle-units input:checked ~ .toggleGraphics::after {
+  content: "C";
+  translate: 1.1em;
 }

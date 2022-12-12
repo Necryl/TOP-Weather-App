@@ -7,8 +7,11 @@ import forecastStyles from "./../styles/forecast.css";
 import detailsStyles from "./../styles/details.css";
 
 // elements
-const loadingTextElem = document.querySelector("h1");
-const responseTextElem = document.querySelector("p");
+const inputSectionElem = document.querySelector("#input");
+const nameInputElem = document.querySelector("#name");
+const latLonContainerElem = document.querySelector("#lat-lon-container");
+const latInputElem = document.querySelector("#lat");
+const lonInputElem = document.querySelector("#lon");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
@@ -100,7 +103,6 @@ async function convertToCoordinates(input) {
     .catch((msg) => {
       throw Error(msg);
     });
-  responseTextElem.textContent = JSON.stringify(result);
   return result;
 }
 
@@ -118,15 +120,9 @@ async function fetchWeather(lat, lon) {
   return result;
 }
 
+// events
+
 // run on start
-loader.setDefaultFuncs(
-  () => {
-    loadingTextElem.classList.remove("hide");
-  },
-  () => {
-    loadingTextElem.classList.add("hide");
-  }
-);
 loader.run([
   async () => {
     const [coords] = await convertToCoordinates("london");

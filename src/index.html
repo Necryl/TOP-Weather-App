@@ -9,28 +9,34 @@
   </head>
   <body>
     <div id="input">
-      <div class="search-wrapper">
-        <input type="text" />
-        <button>Search</button>
-      </div>
-      <button id="local">Get local weather</button>
-      <div id="options">
-        <label id="toggle-units">
-          <input type="checkbox" class="hide" />
-          <span>Unit:</span>
-          <div class="toggleGraphics">
-            <span>F</span>
-            <span>C</span>
+      <div id="input-wrapper">
+        <div class="search-wrapper">
+          <input id="name" type="text" />
+          <div id="lat-lon-container" class="hide">
+            <input type="text" id="lat" />
+            <input type="text" id="lon" />
           </div>
-        </label>
-        <label id="toggle-loc-type">
-          <input type="checkbox" class="hide" />
-          <span>Location type:</span>
-          <div class="toggleGraphics">
-            <span>Name</span>
-            <span>Latitude and Longtitude</span>
-          </div>
-        </label>
+          <button>Search</button>
+        </div>
+        <button id="local">Get local weather</button>
+        <div id="options">
+          <label id="toggle-units" class="toggle">
+            <input type="checkbox" class="hide" />
+            <span>Unit:</span>
+            <div class="toggleGraphics">
+              <span>F</span>
+              <span>C</span>
+            </div>
+          </label>
+          <label id="toggle-loc-type" class="toggle">
+            <input type="checkbox" class="hide" />
+            <span>Location type:</span>
+            <div class="toggleGraphics">
+              <span>Name</span>
+              <span>Latitude and Longtitude</span>
+            </div>
+          </label>
+        </div>
       </div>
     </div>
     <div id="current">Current Weather section</div>
