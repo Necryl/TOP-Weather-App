@@ -8,7 +8,39 @@
     <link rel="icon" href="<%=require('./assets/images/favicon.svg')%>" />
   </head>
   <body>
-    <h1 class="hide">Loading</h1>
-    <p></p>
+    <div id="input">
+      <div class="search-wrapper">
+        <input type="text" />
+        <button>Search</button>
+      </div>
+      <button id="local">Get local weather</button>
+      <div id="options">
+        <label id="toggle-units">
+          <input type="checkbox" class="hide" />
+          <span>Unit:</span>
+          <div class="toggleGraphics">
+            <span>F</span>
+            <span>C</span>
+          </div>
+        </label>
+        <label id="toggle-loc-type">
+          <input type="checkbox" class="hide" />
+          <span>Location type:</span>
+          <div class="toggleGraphics">
+            <span>Name</span>
+            <span>Latitude and Longtitude</span>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div id="current">Current Weather section</div>
+    <div id="forecast">Forecast section</div>
+    <div id="details">
+      Details section
+      <button id="toTop" class="hide">^</button>
+    </div>
+    <div class="loading-screen hide">
+      <div class="loading">Loading...</div>
+    </div>
   </body>
 </html>
