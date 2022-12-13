@@ -15,7 +15,7 @@
     calc(var(--pad) * var(--secondaryPaddingMultiplier));
 
   --pad: 3.5em;
-  --radius: 60%;
+  --radius: calc(var(--pad) * 10);
   --secondaryRadiusMultiplier: 0.2;
   --secondaryPaddingMultiplier: 0.1;
 
@@ -185,4 +185,10 @@
   background-color: white;
   color: black;
   mix-blend-mode: screen;
+}
+#toggle-loc-type input ~ span::before {
+  content: "Use lattitude and longtitude";
+}
+#toggle-loc-type input:checked ~ span::before {
+  content: "Use location name";
 }
