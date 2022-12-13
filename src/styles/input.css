@@ -60,9 +60,21 @@
   color: rgba(255, 255, 255, 0.473);
 }
 
+#inputLabel input {
+  min-width: 10px;
+}
+
 #inputLabel {
   display: grid;
+  grid-auto-flow: column;
   position: relative;
+  width: 15em;
+}
+
+#lat-lon-container {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1em;
 }
 
 #options {
