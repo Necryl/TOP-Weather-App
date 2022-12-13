@@ -9,10 +9,15 @@ import detailsStyles from "./../styles/details.css";
 // elements
 const inputSectionElem = document.querySelector("#input");
 const inputWrapperElem = document.querySelector("#input-wrapper");
+const searchWrapperElem = document.querySelector(".search-wrapper");
+const inputLabelElem = document.querySelector("#inputLabel");
 const nameInputElem = document.querySelector("#name");
 const latLonContainerElem = document.querySelector("#lat-lon-container");
 const latInputElem = document.querySelector("#lat");
 const lonInputElem = document.querySelector("#lon");
+const inputElems = [nameInputElem, latInputElem, lonInputElem];
+const toggleLocTypeInputElem = document.querySelector("#toggle-loc-type input");
+const toggleLocTypeSpanElem = document.querySelector("#toggle-loc-type span");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
@@ -121,11 +126,73 @@ async function fetchWeather(lat, lon) {
   return result;
 }
 
+function updateInputSectionSize() {
+  inputSectionElem.style.height = `${inputWrapperElem.clientHeight}px`;
+  inputSectionElem.style.width = `${inputWrapperElem.clientWidth}px`;
+}
+
 // events
+(() => {
+  let userFocusedFlag = false;
+  inputWrapperElem.addEventListener("mouseenter", () => {
+    if (userFocusedFlag === false) {
+      for (let i = 0; i < inputElems.length; i++) {
+        if (inputElems[i].classList.contains("hide") === false) {
+          inputElems[i].focus();
+          break;
+        }
+      }
+    }
+  });
+  inputElems.forEach((element) => {
+    element.addEventListener("click", () => {
+      userFocusedFlag = true;
+    });
+    element.addEventListener("input", () => {
+      userFocusedFlag = true;
+    });
+    element.addEventListener("blur", () => {
+      userFocusedFlag = false;
+    });
+  });
+  inputWrapperElem.addEventListener("mouseleave", () => {
+    if (userFocusedFlag === false) {
+      inputElems.forEach((element) => {
+        element.blur();
+      });
+    }
+  });
+  inputWrapperElem.addEventListener("transitionend", (event) => {
+    if (event.target === inputWrapperElem) {
+      const inFocus = inputElems.reduce((final, current) => {
+        if (document.activeElement === current) {
+          // eslint-disable-next-line no-param-reassign
+          final = true;
+        }
+        return final;
+      }, false);
+      if (inFocus === false) {
+        updateInputSectionSize();
+      }
+    }
+  });
+})();
+toggleLocTypeInputElem.addEventListener("input", () => {
+  const elem = toggleLocTypeInputElem;
+  [...inputLabelElem.children].forEach((element) => {
+    if (
+      (element === nameInputElem && elem.checked) ||
+      (!elem.checked && element !== nameInputElem)
+    ) {
+      element.classList.add("hide");
+    } else {
+      element.classList.remove("hide");
+    }
+  });
+});
 
 // run on start
-inputSectionElem.style.height = `${inputWrapperElem.clientHeight}px`;
-inputSectionElem.style.width = `${inputWrapperElem.clientWidth}px`;
+updateInputSectionSize();
 
 loader.run([
   async () => {
