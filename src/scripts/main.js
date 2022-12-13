@@ -16,12 +16,13 @@ const latLonContainerElem = document.querySelector("#lat-lon-container");
 const latInputElem = document.querySelector("#lat");
 const lonInputElem = document.querySelector("#lon");
 const inputElems = [nameInputElem, latInputElem, lonInputElem];
+const toggleUnitsInputElem = document.querySelector("#toggle-units input");
 const toggleLocTypeInputElem = document.querySelector("#toggle-loc-type input");
 const toggleLocTypeSpanElem = document.querySelector("#toggle-loc-type span");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
-const units = "metric"; // metric = celsius, imperial = fahrenheit
+let units = "metric"; // metric = celsius, imperial = fahrenheit
 
 // status variables
 
@@ -173,6 +174,9 @@ function updateInputSectionSize() {
     }
   });
 })();
+toggleUnitsInputElem.addEventListener("input", () => {
+  units = toggleUnitsInputElem.checked ? "metric" : "imperial";
+});
 toggleLocTypeInputElem.addEventListener("input", () => {
   const elem = toggleLocTypeInputElem;
   [...inputLabelElem.children].forEach((element) => {
@@ -188,6 +192,9 @@ toggleLocTypeInputElem.addEventListener("input", () => {
 });
 
 // run on start
+toggleUnitsInputElem.checked = true; // setting units to celsius ('metric')
+toggleUnitsInputElem.dispatchEvent(new Event("input"));
+
 updateInputSectionSize();
 
 loader.run([
