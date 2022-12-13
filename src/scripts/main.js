@@ -134,7 +134,9 @@ function updateInputSectionSize() {
 // events
 (() => {
   let userFocusedFlag = false;
+  let mouseOutsideFlag = true;
   inputWrapperElem.addEventListener("mouseenter", () => {
+    mouseOutsideFlag = false;
     if (userFocusedFlag === false) {
       for (let i = 0; i < inputElems.length; i++) {
         if (inputElems[i].classList.contains("hide") === false) {
@@ -156,24 +158,18 @@ function updateInputSectionSize() {
     });
   });
   inputWrapperElem.addEventListener("mouseleave", () => {
+    mouseOutsideFlag = true;
     if (userFocusedFlag === false) {
-      inputElems.forEach((element) => {
-        element.blur();
-      });
+      [...inputElems, ...inputWrapperElem.querySelectorAll("button")].forEach(
+        (element) => {
+          element.blur();
+        }
+      );
     }
   });
   inputWrapperElem.addEventListener("transitionend", (event) => {
-    if (event.target === inputWrapperElem) {
-      const inFocus = inputElems.reduce((final, current) => {
-        if (document.activeElement === current) {
-          // eslint-disable-next-line no-param-reassign
-          final = true;
-        }
-        return final;
-      }, false);
-      if (inFocus === false) {
-        updateInputSectionSize();
-      }
+    if (event.target === inputWrapperElem && mouseOutsideFlag) {
+      updateInputSectionSize();
     }
   });
 })();
