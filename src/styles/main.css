@@ -13,9 +13,6 @@ body {
   background-color: rgb(70, 169, 199);
 
   display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    "I C"
-    "F F"
-    "D D";
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto;
 }
