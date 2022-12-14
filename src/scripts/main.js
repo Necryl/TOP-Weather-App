@@ -100,6 +100,7 @@ async function convertToCoordinates(input) {
     .then((response) => response.json())
     .then((data) =>
       data.reduce((final, current) => {
+        console.count(`Result counter for '${input}'`);
         final.push([
           current.lat,
           current.lon,
@@ -141,6 +142,7 @@ function updateInputSectionSize() {
   let mouseOutsideFlag = true;
   inputWrapperElem.addEventListener("mouseenter", () => {
     mouseOutsideFlag = false;
+    inputWrapperElem.classList.add("fbi-open-up");
     if (userFocusedFlag === false) {
       for (let i = 0; i < inputElems.length; i++) {
         if (inputElems[i].classList.contains("hide") === false) {
@@ -153,17 +155,29 @@ function updateInputSectionSize() {
   inputElems.forEach((element) => {
     element.addEventListener("click", () => {
       userFocusedFlag = true;
+      mouseOutsideFlag = false;
+      inputWrapperElem.classList.add("fbi-open-up");
     });
     element.addEventListener("input", () => {
       userFocusedFlag = true;
     });
     element.addEventListener("blur", () => {
       userFocusedFlag = false;
+      if (mouseOutsideFlag) {
+        inputWrapperElem.dispatchEvent(new Event("mouseleave"));
+      }
+    });
+    element.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        userFocusedFlag = false;
+        searchBtnElem.click();
+      }
     });
   });
   inputWrapperElem.addEventListener("mouseleave", () => {
     mouseOutsideFlag = true;
     if (userFocusedFlag === false) {
+      inputWrapperElem.classList.remove("fbi-open-up");
       [...inputElems, ...inputWrapperElem.querySelectorAll("button")].forEach(
         (element) => {
           element.blur();
@@ -181,16 +195,45 @@ searchBtnElem.addEventListener("click", () => {
   loader.run([
     async () => {
       let coords;
+      let ready = true;
       if (toggleLocTypeInputElem.checked) {
         console.log("using lat and lon");
-        coords = [latInputElem.value, lonInputElem.value];
+        coords = [latInputElem.value.trim(), lonInputElem.value.trim()];
+        if (
+          /^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$/.test(
+            coords[0]
+          ) === false ||
+          /^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/.test(
+            coords[1]
+          ) === false
+        ) {
+          ready = false;
+        }
       } else {
         console.log("using name");
-        [coords] = await convertToCoordinates(nameInputElem.value.trim());
+        const input = nameInputElem.value.trim();
+        if (
+          /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/.test(
+            input
+          )
+        ) {
+          [coords] = await convertToCoordinates(input);
+          if (typeof coords === "undefined" && !Array.isArray(coords)) {
+            ready = false;
+          } else {
+            [latInputElem.value, lonInputElem.value] = coords;
+          }
+        } else {
+          ready = false;
+        }
       }
-      const data = await fetchWeather(coords[0], coords[1]);
-      currentElem.querySelector("#input + span").textContent =
-        JSON.stringify(data);
+      if (ready) {
+        inputWrapperElem.dispatchEvent(new Event("mouseleave"));
+        const data = await fetchWeather(coords[0], coords[1]);
+        nameInputElem.value = data.name;
+        currentElem.querySelector("#input + span").textContent =
+          JSON.stringify(data);
+      }
     },
   ]);
 });

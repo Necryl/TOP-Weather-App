@@ -20,7 +20,7 @@
   transition: all 100ms;
 }
 
-#input-wrapper:is(:hover, :focus-within) {
+#input-wrapper.fbi-open-up {
   background-color: rgb(207, 27, 57);
   color: white;
   padding: calc(var(--pad) * var(--secondaryPaddingMultiplier)) var(--pad)
@@ -29,7 +29,7 @@
     var(--radius) calc(var(--radius) * var(--secondaryRadiusMultiplier));
 }
 
-#input-wrapper:not(:is(:hover, :focus-within))
+#input-wrapper:not(.fbi-open-up)
   *:not(
     #inputLabel *:not(.hide),
     #inputLabel,
@@ -58,7 +58,7 @@
   stroke-width: 0.1em;
 }
 
-#input-wrapper:is(:hover, :focus-within) .search-wrapper svg {
+#input-wrapper.fbi-open-up .search-wrapper svg {
   --col: white;
 }
 
@@ -73,7 +73,7 @@
 }
 
 .search-wrapper input:focus,
-#input-wrapper:is(:hover, :focus-within) .search-wrapper input {
+#input-wrapper.fbi-open-up .search-wrapper input {
   border-bottom-color: white;
   color: white;
 }
@@ -81,7 +81,7 @@
 #input-wrapper .search-wrapper input::placeholder {
   color: rgba(0, 0, 0, 0.466);
 }
-#input-wrapper:is(:hover, :focus-within) .search-wrapper input::placeholder {
+#input-wrapper.fbi-open-up .search-wrapper input::placeholder {
   color: rgba(255, 255, 255, 0.534);
 }
 

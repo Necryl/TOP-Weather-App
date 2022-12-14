@@ -26,8 +26,18 @@
             <label id="inputLabel">
               <input id="name" type="text" placeholder="Enter location name" />
               <div id="lat-lon-container" class="hide">
-                <input type="text" id="lat" placeholder="lattitude" />
-                <input type="text" id="lon" placeholder="longtitude" />
+                <input
+                  type="text"
+                  id="lat"
+                  pattern="^\d*\.?\d*$"
+                  placeholder="lattitude"
+                />
+                <input
+                  type="text"
+                  id="lon"
+                  pattern="^\d*\.?\d*$"
+                  placeholder="longtitude"
+                />
               </div>
             </label>
             <button>Search</button>
