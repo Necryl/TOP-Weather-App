@@ -3,8 +3,8 @@
 }
 
 #input-wrapper {
-  background-color: rgb(207, 27, 57);
-  color: white;
+  background-color: inherit;
+  color: rgb(0, 0, 0);
   font-size: 1.2rem;
   position: absolute;
   display: grid;
@@ -21,6 +21,8 @@
 }
 
 #input-wrapper:is(:hover, :focus-within) {
+  background-color: rgb(207, 27, 57);
+  color: white;
   padding: calc(var(--pad) * var(--secondaryPaddingMultiplier)) var(--pad)
     var(--pad) calc(var(--pad) * var(--secondaryPaddingMultiplier));
   border-radius: 0rem calc(var(--radius) * var(--secondaryRadiusMultiplier))
@@ -28,7 +30,13 @@
 }
 
 #input-wrapper:not(:is(:hover, :focus-within))
-  *:not(#inputLabel *:not(.hide), #inputLabel, .search-wrapper) {
+  *:not(
+    #inputLabel *:not(.hide),
+    #inputLabel,
+    .search-wrapper,
+    .search-wrapper svg,
+    .search-wrapper svg *
+  ) {
   display: none;
   padding: 0%;
 }
@@ -39,8 +47,22 @@
   gap: 0.5em;
 }
 
+.search-wrapper svg {
+  display: grid;
+  width: 2rem;
+  height: 100%;
+  aspect-ratio: 1/1;
+  --col: black;
+  fill: var(--col);
+  stroke: var(--col);
+  stroke-width: 0.1em;
+}
+
+#input-wrapper:is(:hover, :focus-within) .search-wrapper svg {
+  --col: white;
+}
+
 .search-wrapper :is(input, input:focus) {
-  font-size: inherit;
   min-width: none;
   background-color: transparent;
   border: none;
@@ -54,8 +76,11 @@
   border-bottom-color: white;
 }
 
-.search-wrapper input::placeholder {
-  color: rgba(255, 255, 255, 0.473);
+#input-wrapper .search-wrapper input::placeholder {
+  color: rgba(0, 0, 0, 0.466);
+}
+#input-wrapper:is(:hover, :focus-within) .search-wrapper input::placeholder {
+  color: rgba(255, 255, 255, 0.534);
 }
 
 #inputLabel input {
