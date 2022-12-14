@@ -68,12 +68,14 @@
   border: none;
   border-bottom: 0.1em solid transparent;
   outline: none;
-  color: white;
+  color: black;
   font-size: 1.75rem;
 }
+
 .search-wrapper input:focus,
 #input-wrapper:is(:hover, :focus-within) .search-wrapper input {
   border-bottom-color: white;
+  color: white;
 }
 
 #input-wrapper .search-wrapper input::placeholder {

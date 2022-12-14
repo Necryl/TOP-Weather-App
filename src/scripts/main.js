@@ -16,9 +16,12 @@ const latLonContainerElem = document.querySelector("#lat-lon-container");
 const latInputElem = document.querySelector("#lat");
 const lonInputElem = document.querySelector("#lon");
 const inputElems = [nameInputElem, latInputElem, lonInputElem];
+const searchBtnElem = document.querySelector(".search-wrapper button");
 const toggleUnitsInputElem = document.querySelector("#toggle-units input");
 const toggleLocTypeInputElem = document.querySelector("#toggle-loc-type input");
 const toggleLocTypeSpanElem = document.querySelector("#toggle-loc-type span");
+
+const currentElem = document.querySelector("#current");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
@@ -174,6 +177,23 @@ function updateInputSectionSize() {
     }
   });
 })();
+searchBtnElem.addEventListener("click", () => {
+  loader.run([
+    async () => {
+      let coords;
+      if (toggleLocTypeInputElem.checked) {
+        console.log("using lat and lon");
+        coords = [latInputElem.value, lonInputElem.value];
+      } else {
+        console.log("using name");
+        [coords] = await convertToCoordinates(nameInputElem.value.trim());
+      }
+      const data = await fetchWeather(coords[0], coords[1]);
+      currentElem.querySelector("#input + span").textContent =
+        JSON.stringify(data);
+    },
+  ]);
+});
 toggleUnitsInputElem.addEventListener("input", () => {
   units = toggleUnitsInputElem.checked ? "metric" : "imperial";
 });
@@ -196,10 +216,3 @@ toggleUnitsInputElem.checked = true; // setting units to celsius ('metric')
 toggleUnitsInputElem.dispatchEvent(new Event("input"));
 
 updateInputSectionSize();
-
-loader.run([
-  async () => {
-    const [coords] = await convertToCoordinates("london");
-    await fetchWeather(coords[0], coords[1]);
-  },
-]);
