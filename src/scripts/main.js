@@ -104,43 +104,51 @@ const UI = (() => {
   };
 })();
 
-// functions
-async function convertToCoordinates(input) {
-  const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&appid=${key}`;
-  const result = await fetch(url, { mode: "cors" })
-    .then((response) => response.json())
-    .then((data) =>
-      data.reduce((final, current) => {
-        console.count(`Result counter for '${input}'`);
-        final.push([
-          current.lat,
-          current.lon,
-          current.name,
-          current.state,
-          current.country,
-        ]);
-        return final;
-      }, [])
-    )
-    .catch((msg) => {
-      throw Error(msg);
-    });
-  return result;
-}
+const Data = (() => {
+  async function convertToCoordinates(input) {
+    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&appid=${key}`;
+    const result = await fetch(url, { mode: "cors" })
+      .then((response) => response.json())
+      .then((data) =>
+        data.reduce((final, current) => {
+          console.count(`Result counter for '${input}'`);
+          final.push([
+            current.lat,
+            current.lon,
+            current.name,
+            current.state,
+            current.country,
+          ]);
+          return final;
+        }, [])
+      )
+      .catch((msg) => {
+        throw Error(msg);
+      });
+    return result;
+  }
 
-async function fetchWeather(lat, lon) {
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
-  const result = await fetch(url, { mode: "cors" })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      return data;
-    })
-    .catch((msg) => {
-      throw Error(msg);
-    });
-  return result;
-}
+  async function fetchWeather(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
+    const result = await fetch(url, { mode: "cors" })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        return data;
+      })
+      .catch((msg) => {
+        throw Error(msg);
+      });
+    return result;
+  }
+
+  return {
+    convertToCoordinates,
+    fetchWeather,
+  };
+})();
+
+// functions
 
 // events
 (() => {
@@ -249,7 +257,7 @@ searchBtnElem.addEventListener("click", () => {
               input
             )
           ) {
-            [coords] = await convertToCoordinates(input);
+            [coords] = await Data.convertToCoordinates(input);
             if (typeof coords === "undefined" && !Array.isArray(coords)) {
               ready = false;
             } else {
@@ -261,7 +269,7 @@ searchBtnElem.addEventListener("click", () => {
         }
         if (ready) {
           inputWrapperElem.dispatchEvent(new Event("mouseleave"));
-          const data = await fetchWeather(coords[0], coords[1]);
+          const data = await Data.fetchWeather(coords[0], coords[1]);
           nameInputElem.value = data.name;
           currentElem.querySelector("#input + span").textContent =
             JSON.stringify(data);
