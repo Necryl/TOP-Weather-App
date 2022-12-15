@@ -93,6 +93,17 @@ const loader = (() => {
   };
 })();
 
+const UI = (() => {
+  function updateInputSectionSize() {
+    inputSectionElem.style.height = `${inputWrapperElem.clientHeight}px`;
+    inputSectionElem.style.width = `${inputWrapperElem.clientWidth}px`;
+  }
+
+  return {
+    updateInputSectionSize,
+  };
+})();
+
 // functions
 async function convertToCoordinates(input) {
   const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&appid=${key}`;
@@ -131,11 +142,6 @@ async function fetchWeather(lat, lon) {
   return result;
 }
 
-function updateInputSectionSize() {
-  inputSectionElem.style.height = `${inputWrapperElem.clientHeight}px`;
-  inputSectionElem.style.width = `${inputWrapperElem.clientWidth}px`;
-}
-
 // events
 (() => {
   let userFocusedFlag = false;
@@ -160,6 +166,14 @@ function updateInputSectionSize() {
     });
     element.addEventListener("input", () => {
       userFocusedFlag = true;
+      element.setCustomValidity("");
+      if (!element.validity.valid || element.value.trim() === "") {
+        if (element.id === "name") {
+          element.setCustomValidity("Please enter the location name");
+        } else {
+          element.setCustomValidity("Please enter an integer or a decimal");
+        }
+      }
     });
     element.addEventListener("blur", () => {
       userFocusedFlag = false;
@@ -173,6 +187,7 @@ function updateInputSectionSize() {
         searchBtnElem.click();
       }
     });
+    element.dispatchEvent(new Event("input"));
   });
   inputWrapperElem.addEventListener("mouseleave", () => {
     mouseOutsideFlag = true;
@@ -187,55 +202,78 @@ function updateInputSectionSize() {
   });
   inputWrapperElem.addEventListener("transitionend", (event) => {
     if (event.target === inputWrapperElem && mouseOutsideFlag) {
-      updateInputSectionSize();
+      UI.updateInputSectionSize();
     }
   });
 })();
 searchBtnElem.addEventListener("click", () => {
-  loader.run([
-    async () => {
-      let coords;
-      let ready = true;
-      if (toggleLocTypeInputElem.checked) {
-        console.log("using lat and lon");
-        coords = [latInputElem.value.trim(), lonInputElem.value.trim()];
-        if (
-          /^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$/.test(
-            coords[0]
-          ) === false ||
-          /^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/.test(
-            coords[1]
-          ) === false
-        ) {
-          ready = false;
-        }
-      } else {
-        console.log("using name");
-        const input = nameInputElem.value.trim();
-        if (
-          /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/.test(
-            input
-          )
-        ) {
-          [coords] = await convertToCoordinates(input);
-          if (typeof coords === "undefined" && !Array.isArray(coords)) {
+  let formValidated = true;
+  const inputElements = toggleLocTypeInputElem.checked
+    ? inputElems.slice(1)
+    : [nameInputElem];
+  inputElements.forEach((element) => {
+    if (element.validity.valid === false || element.value === "") {
+      element.reportValidity();
+      formValidated = false;
+    }
+  });
+  if (formValidated) {
+    loader.run([
+      async () => {
+        let coords;
+        let ready = true;
+        if (toggleLocTypeInputElem.checked) {
+          console.log("using lat and lon");
+          coords = [
+            String(Number(latInputElem.value.trim())),
+            String(Number(lonInputElem.value.trim())),
+          ];
+          if (
+            /^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))$|^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))\.([0-9]+)?([1-9])$/.test(
+              coords[0]
+            ) === false ||
+            /^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))$|^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))\.([0-9]+)?([1-9])$/.test(
+              coords[1]
+            ) === false
+          ) {
+            console.log("The lat and lon input didn't pass the regxp test");
             ready = false;
           } else {
             [latInputElem.value, lonInputElem.value] = coords;
           }
         } else {
-          ready = false;
+          console.log("using name");
+          const input = nameInputElem.value.trim();
+          if (
+            /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/.test(
+              input
+            )
+          ) {
+            [coords] = await convertToCoordinates(input);
+            if (typeof coords === "undefined" && !Array.isArray(coords)) {
+              ready = false;
+            } else {
+              [latInputElem.value, lonInputElem.value] = coords;
+            }
+          } else {
+            ready = false;
+          }
         }
-      }
-      if (ready) {
-        inputWrapperElem.dispatchEvent(new Event("mouseleave"));
-        const data = await fetchWeather(coords[0], coords[1]);
-        nameInputElem.value = data.name;
-        currentElem.querySelector("#input + span").textContent =
-          JSON.stringify(data);
-      }
-    },
-  ]);
+        if (ready) {
+          inputWrapperElem.dispatchEvent(new Event("mouseleave"));
+          const data = await fetchWeather(coords[0], coords[1]);
+          nameInputElem.value = data.name;
+          currentElem.querySelector("#input + span").textContent =
+            JSON.stringify(data);
+        } else {
+          nameInputElem.setCustomValidity(
+            "Couldn't find a match. Are you sure the spelling is correct?"
+          );
+          nameInputElem.reportValidity();
+        }
+      },
+    ]);
+  }
 });
 toggleUnitsInputElem.addEventListener("input", () => {
   units = toggleUnitsInputElem.checked ? "metric" : "imperial";
@@ -258,4 +296,4 @@ toggleLocTypeInputElem.addEventListener("input", () => {
 toggleUnitsInputElem.checked = true; // setting units to celsius ('metric')
 toggleUnitsInputElem.dispatchEvent(new Event("input"));
 
-updateInputSectionSize();
+UI.updateInputSectionSize();
