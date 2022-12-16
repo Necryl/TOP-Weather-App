@@ -94,13 +94,167 @@ const loader = (() => {
 })();
 
 const UI = (() => {
+  const activeElement = {
+    history: [null, null, null, null, null],
+    failedAttempts: 0,
+  };
+  // the following events and function update activeElement object
+  (() => {
+    document.addEventListener("focus", updateActiveElementHistory, true);
+    document.addEventListener("blur", updateActiveElementHistory, true);
+    document.addEventListener("click", updateActiveElementHistory, true);
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key === "Tab") {
+          updateActiveElementHistory();
+        }
+      },
+      true
+    );
+    function updateActiveElementHistory() {
+      setTimeout(() => {
+        if (
+          activeElement.history[activeElement.history.length - 1] !==
+          document.activeElement
+        ) {
+          activeElement.failedAttempts = 0;
+          activeElement.history.shift();
+          activeElement.history.push(document.activeElement);
+        } else {
+          activeElement.failedAttempts += 1;
+        }
+      }, 0);
+    }
+  })();
+
   function updateInputSectionSize() {
     inputSectionElem.style.height = `${inputWrapperElem.clientHeight}px`;
     inputSectionElem.style.width = `${inputWrapperElem.clientWidth}px`;
   }
 
+  function setInputValidity(element) {
+    element.setCustomValidity("");
+    if (!element.validity.valid || element.value.trim() === "") {
+      if (element.id === "name") {
+        element.setCustomValidity("Please enter the location name");
+      } else {
+        element.setCustomValidity("Please enter an integer or a decimal");
+      }
+    }
+  }
+
+  function focusOnTheFirstInputElem() {
+    for (let i = 0; i < inputElems.length; i++) {
+      if (inputElems[i].classList.contains("hide") === false) {
+        inputElems[i].focus();
+        inputElems[i].dispatchEvent(new Event("focus"));
+        break;
+      }
+    }
+  }
+
+  function setNameInput(value) {
+    nameInputElem.value = value;
+    setInputValidity(nameInputElem);
+  }
+
+  function setLatLonInput(latValue = null, lonValue = null) {
+    if (latValue !== null) {
+      latInputElem.value = latValue;
+      setInputValidity(latInputElem);
+    }
+    if (lonValue !== null) {
+      lonInputElem.value = lonValue;
+      setInputValidity(lonInputElem);
+    }
+  }
+
+  (() => {
+    // input section events
+    let userFocusedFlag = false;
+    let mouseOutsideFlag = true;
+    inputWrapperElem.addEventListener("mouseenter", () => {
+      mouseOutsideFlag = false;
+      inputWrapperElem.classList.add("fbi-open-up");
+      if (userFocusedFlag === false) {
+        focusOnTheFirstInputElem();
+      }
+    });
+    inputElems.forEach((element) => {
+      element.addEventListener("click", () => {
+        userFocusedFlag = true;
+        mouseOutsideFlag = false;
+        inputWrapperElem.classList.add("fbi-open-up");
+      });
+      element.addEventListener("input", () => {
+        userFocusedFlag = true;
+        setInputValidity(element);
+      });
+      element.addEventListener("blur", () => {
+        userFocusedFlag = false;
+        if (mouseOutsideFlag) {
+          inputWrapperElem.dispatchEvent(new Event("mouseleave"));
+        }
+      });
+      element.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          userFocusedFlag = false;
+          searchBtnElem.click();
+        }
+      });
+    });
+    inputWrapperElem.addEventListener("mouseleave", () => {
+      mouseOutsideFlag = true;
+      if (userFocusedFlag === false) {
+        inputWrapperElem.classList.remove("fbi-open-up");
+        inputElems.forEach((element) => {
+          element.blur();
+        });
+      }
+    });
+    inputWrapperElem.addEventListener("transitionend", (event) => {
+      if (event.target === inputWrapperElem && mouseOutsideFlag) {
+        updateInputSectionSize();
+      }
+    });
+    toggleLocTypeInputElem.addEventListener(
+      "input",
+      () => {
+        const elem = toggleLocTypeInputElem;
+        [...inputLabelElem.children].forEach((element) => {
+          if (
+            (element === nameInputElem && elem.checked) ||
+            (!elem.checked && element !== nameInputElem)
+          ) {
+            element.classList.add("hide");
+          } else {
+            element.classList.remove("hide");
+          }
+        });
+
+        focusOnTheFirstInputElem();
+      },
+      false
+    );
+  })();
+
+  function initialize() {
+    updateInputSectionSize();
+
+    toggleUnitsInputElem.checked = true; // setting units to celsius ('metric')
+    toggleUnitsInputElem.dispatchEvent(new Event("input"));
+
+    inputElems.forEach((element) => {
+      setInputValidity(element);
+    });
+  }
+
   return {
-    updateInputSectionSize,
+    initialize,
+    focusOnTheFirstInputElem,
+    setNameInput,
+    setLatLonInput,
   };
 })();
 
@@ -148,72 +302,8 @@ const Data = (() => {
   };
 })();
 
-// functions
-
 // events
-(() => {
-  let userFocusedFlag = false;
-  let mouseOutsideFlag = true;
-  inputWrapperElem.addEventListener("mouseenter", () => {
-    mouseOutsideFlag = false;
-    inputWrapperElem.classList.add("fbi-open-up");
-    if (userFocusedFlag === false) {
-      for (let i = 0; i < inputElems.length; i++) {
-        if (inputElems[i].classList.contains("hide") === false) {
-          inputElems[i].focus();
-          break;
-        }
-      }
-    }
-  });
-  inputElems.forEach((element) => {
-    element.addEventListener("click", () => {
-      userFocusedFlag = true;
-      mouseOutsideFlag = false;
-      inputWrapperElem.classList.add("fbi-open-up");
-    });
-    element.addEventListener("input", () => {
-      userFocusedFlag = true;
-      element.setCustomValidity("");
-      if (!element.validity.valid || element.value.trim() === "") {
-        if (element.id === "name") {
-          element.setCustomValidity("Please enter the location name");
-        } else {
-          element.setCustomValidity("Please enter an integer or a decimal");
-        }
-      }
-    });
-    element.addEventListener("blur", () => {
-      userFocusedFlag = false;
-      if (mouseOutsideFlag) {
-        inputWrapperElem.dispatchEvent(new Event("mouseleave"));
-      }
-    });
-    element.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        userFocusedFlag = false;
-        searchBtnElem.click();
-      }
-    });
-    element.dispatchEvent(new Event("input"));
-  });
-  inputWrapperElem.addEventListener("mouseleave", () => {
-    mouseOutsideFlag = true;
-    if (userFocusedFlag === false) {
-      inputWrapperElem.classList.remove("fbi-open-up");
-      [...inputElems, ...inputWrapperElem.querySelectorAll("button")].forEach(
-        (element) => {
-          element.blur();
-        }
-      );
-    }
-  });
-  inputWrapperElem.addEventListener("transitionend", (event) => {
-    if (event.target === inputWrapperElem && mouseOutsideFlag) {
-      UI.updateInputSectionSize();
-    }
-  });
-})();
+
 searchBtnElem.addEventListener("click", () => {
   let formValidated = true;
   const inputElements = toggleLocTypeInputElem.checked
@@ -236,43 +326,48 @@ searchBtnElem.addEventListener("click", () => {
             String(Number(latInputElem.value.trim())),
             String(Number(lonInputElem.value.trim())),
           ];
-          if (
-            /^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))$|^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))\.([0-9]+)?([1-9])$/.test(
-              coords[0]
-            ) === false ||
-            /^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))$|^(0(?=\.([0-9]+)?[1-9])|([1-9]([0-9]+)?))\.([0-9]+)?([1-9])$/.test(
-              coords[1]
-            ) === false
-          ) {
-            console.log("The lat and lon input didn't pass the regxp test");
-            ready = false;
-          } else {
-            [latInputElem.value, lonInputElem.value] = coords;
-          }
+          [latInputElem.value, lonInputElem.value] = coords;
         } else {
           console.log("using name");
-          const input = nameInputElem.value.trim();
+          const nameInput = nameInputElem.value.trim();
           if (
             /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/.test(
-              input
+              nameInput
             )
           ) {
-            [coords] = await Data.convertToCoordinates(input);
+            [coords] = await Data.convertToCoordinates(nameInput);
             if (typeof coords === "undefined" && !Array.isArray(coords)) {
               ready = false;
             } else {
-              [latInputElem.value, lonInputElem.value] = coords;
+              UI.setLatLonInput(...coords);
             }
           } else {
             ready = false;
+            console.log("the inputName didn't pass the regex test");
           }
         }
         if (ready) {
-          inputWrapperElem.dispatchEvent(new Event("mouseleave"));
           const data = await Data.fetchWeather(coords[0], coords[1]);
-          nameInputElem.value = data.name;
-          currentElem.querySelector("#input + span").textContent =
-            JSON.stringify(data);
+          if (data.cod === "400") {
+            if (toggleLocTypeInputElem.checked) {
+              if (data.message.includes("latitude")) {
+                latInputElem.setCustomValidity(data.message);
+                latInputElem.reportValidity();
+              } else if (data.message.includes("longitude")) {
+                lonInputElem.setCustomValidity(data.message);
+                lonInputElem.reportValidity();
+              }
+            } else {
+              nameInputElem.setCustomValidity(data.message);
+              nameInputElem.reportValidity();
+            }
+            console.warn("API Error [400]:", data.message);
+          } else {
+            inputWrapperElem.dispatchEvent(new Event("mouseleave"));
+            UI.setNameInput(data.name);
+            currentElem.querySelector("#input + span").textContent =
+              JSON.stringify(data);
+          }
         } else {
           nameInputElem.setCustomValidity(
             "Couldn't find a match. Are you sure the spelling is correct?"
@@ -286,22 +381,6 @@ searchBtnElem.addEventListener("click", () => {
 toggleUnitsInputElem.addEventListener("input", () => {
   units = toggleUnitsInputElem.checked ? "metric" : "imperial";
 });
-toggleLocTypeInputElem.addEventListener("input", () => {
-  const elem = toggleLocTypeInputElem;
-  [...inputLabelElem.children].forEach((element) => {
-    if (
-      (element === nameInputElem && elem.checked) ||
-      (!elem.checked && element !== nameInputElem)
-    ) {
-      element.classList.add("hide");
-    } else {
-      element.classList.remove("hide");
-    }
-  });
-});
 
 // run on start
-toggleUnitsInputElem.checked = true; // setting units to celsius ('metric')
-toggleUnitsInputElem.dispatchEvent(new Event("input"));
-
-UI.updateInputSectionSize();
+UI.initialize();
