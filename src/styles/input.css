@@ -1,219 +1,65 @@
 #input {
-  position: relative;
-}
+  height: 100vh;
+  background-color: pink;
 
-#input-wrapper {
-  background-color: inherit;
-  color: rgb(0, 0, 0);
-  font-size: 1.2rem;
-  position: absolute;
   display: grid;
-  gap: 20px;
-  padding: calc(var(--pad) * var(--secondaryPaddingMultiplier)) 0rem 0rem
-    calc(var(--pad) * var(--secondaryPaddingMultiplier));
-
-  --pad: 3.5em;
-  --radius: calc(var(--pad) * 10);
-  --secondaryRadiusMultiplier: 0.2;
-  --secondaryPaddingMultiplier: 0.1;
-
-  transition: all 100ms;
+  place-items: center;
 }
 
-#input-wrapper.fbi-open-up {
-  background-color: rgb(207, 27, 57);
-  color: white;
-  padding: calc(var(--pad) * var(--secondaryPaddingMultiplier)) var(--pad)
-    var(--pad) calc(var(--pad) * var(--secondaryPaddingMultiplier));
-  border-radius: 0rem calc(var(--radius) * var(--secondaryRadiusMultiplier))
-    var(--radius) calc(var(--radius) * var(--secondaryRadiusMultiplier));
-}
-
-#input-wrapper:not(.fbi-open-up)
-  *:not(
-    #inputLabel *:not(.hide),
-    #inputLabel,
-    .search-wrapper,
-    .search-wrapper svg,
-    .search-wrapper svg *
-  ) {
-  display: none;
-  padding: 0%;
-}
-
-.search-wrapper {
+#input-container {
   display: grid;
-  grid-auto-flow: column;
-  gap: 0.5em;
-}
-
-.search-wrapper svg {
-  display: grid;
-  width: 2rem;
-  height: 100%;
-  aspect-ratio: 1/1;
-  --col: black;
-  fill: var(--col);
-  stroke: var(--col);
-  stroke-width: 0.1em;
-}
-
-#input-wrapper.fbi-open-up .search-wrapper svg {
-  --col: white;
-}
-
-.search-wrapper :is(input, input:focus) {
-  min-width: none;
-  background-color: transparent;
-  border: none;
-  border-bottom: 0.1em solid transparent;
-  outline: none;
-  color: black;
-  font-size: 1.75rem;
-}
-
-.search-wrapper input:focus,
-#input-wrapper.fbi-open-up .search-wrapper input {
-  border-bottom-color: white;
-  color: white;
-}
-
-#input-wrapper .search-wrapper input::placeholder {
-  color: rgba(0, 0, 0, 0.466);
-}
-#input-wrapper.fbi-open-up .search-wrapper input::placeholder {
-  color: rgba(255, 255, 255, 0.534);
-}
-
-#inputLabel input {
-  min-width: 10px;
-}
-
-#inputLabel {
-  display: grid;
-  grid-auto-flow: column;
-  position: relative;
-  width: 15em;
-}
-
-#lat-lon-container {
-  display: grid;
-  grid-auto-flow: column;
+  grid-template-columns: 1fr;
   gap: 1em;
+  padding: 1em;
+}
+
+#searchInputs {
+  display: grid;
+  width: 60vw;
+  justify-self: center;
+}
+
+#lat-lon-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#searchInputs input {
+  width: 100%;
+  font-size: inherit;
+}
+
+#buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+#buttons * {
+  font-size: inherit;
+}
+
+#getLocal {
+  justify-self: end;
+}
+
+#search {
+  justify-self: start;
 }
 
 #options {
   display: grid;
-  grid-template-columns: auto auto;
-  grid-template-areas:
-    "O O"
-    "U G"
-    "L L";
-  gap: 13px;
+  grid-auto-flow: column;
+  grid-template-columns: auto auto auto;
+  justify-content: center;
+  gap: 1em;
 }
-
-#options::before {
-  grid-area: O;
-  content: "Options:";
-}
-
-.toggle {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 1rem;
-  justify-content: start;
-}
-
 #options * {
   user-select: none;
 }
 
-.toggle > span {
-  width: max-content;
-}
-
-.toggleGraphics {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  position: relative;
-}
-
-.toggleGraphics > span {
-  width: max-content;
-}
-
-#toggle-units {
-  grid-area: U;
-}
-
-#toggle-units .toggleGraphics span {
-  font-size: 1rem;
-  background-color: white;
-  color: rgba(0, 0, 0, 0.753);
-  padding: 1px 7px;
-
-  --radius: 5px;
-}
-
-#toggle-units .toggleGraphics span {
-  border-radius: 0px var(--radius) var(--radius) 0px;
-}
-#toggle-units .toggleGraphics span:first-child {
-  border-radius: var(--radius) 0px 0px var(--radius);
-}
-
-#toggle-units .toggleGraphics::after {
-  content: "F";
-  position: absolute;
-  width: 1.3em;
-  text-align: center;
-
-  background-color: rgb(130, 230, 38);
-  color: black;
-
-  font-size: 1.2rem;
-
-  padding: 0.1rem 0rem;
-  border-radius: 5px;
-
-  translate: 0.1em;
-  transition: translate 50ms ease-out;
-}
-
-#toggle-units input:checked ~ .toggleGraphics::after {
-  content: "C";
-  translate: 1.1em;
-}
-
-#localBtn {
-  grid-area: G;
-}
-
-#toggle-loc-type {
-  grid-area: L;
-  justify-self: stretch;
-  display: grid;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#toggle-loc-type span {
-  text-align: center;
-  border: 1px solid white;
-  padding: 0.2em 0.6em;
-  border-radius: 0.3em;
-}
-
-#toggle-loc-type input:checked ~ span {
-  background-color: white;
-  color: black;
-  mix-blend-mode: screen;
-}
-#toggle-loc-type input ~ span::before {
-  content: "Use lattitude and longtitude";
-}
-#toggle-loc-type input:checked ~ span::before {
-  content: "Use location name";
+@media (max-width: 500px) {
+  #searchInputs {
+    width: 100%;
+  }
 }

@@ -1,3 +1,6 @@
 #current {
   background-color: yellow;
+  width: 100%;
+
+  display: grid;
 }
