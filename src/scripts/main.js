@@ -7,8 +7,12 @@ import forecastStyles from "./../styles/forecast.css";
 import detailsStyles from "./../styles/details.css";
 
 // elements
+const bodyElem = document.querySelector("body");
+
 const nameInputElem = document.querySelector("#nameInput");
 const latLonInputsElem = document.querySelector("#lat-lon-inputs");
+const inputElems = [nameInputElem, ...latLonInputsElem.children];
+const searchBtnElem = document.querySelector("#search");
 const toggleUnitInputElem = document.querySelector("#toggleUnit input");
 const toggleLocTypeInputElem = document.querySelector("#toggleLocType input");
 const toggleLocTypeSpanElem = document.querySelector("#toggleLocType span");
@@ -150,6 +154,16 @@ const Data = (() => {
 // events
 toggleUnitInputElem.addEventListener("input", (event) => {
   units = event.target.checked ? "imperial" : "metric"; // metric = celsius, imperial = fahrenheit
+});
+
+searchBtnElem.addEventListener("click", () => {
+  bodyElem.classList.add("display");
+});
+
+inputElems.forEach((elem) => {
+  elem.addEventListener("focus", () => {
+    bodyElem.classList.remove("display");
+  });
 });
 
 // run on start
