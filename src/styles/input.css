@@ -52,10 +52,55 @@
   grid-auto-flow: column;
   grid-template-columns: auto auto auto;
   justify-content: center;
+  align-items: center;
   gap: 1em;
 }
 #options * {
   user-select: none;
+}
+
+#toggleUnit {
+  text-align: center;
+  display: grid;
+  align-items: center;
+}
+
+#toggleUnit span {
+  background-color: rgb(129, 154, 175);
+  position: relative;
+  color: white;
+  word-spacing: 0.7em;
+
+  padding: 0.05em 0.35em;
+  border-radius: 0.3em;
+}
+
+#toggleUnit span::after {
+  content: "C";
+  position: absolute;
+  background-color: red;
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  font-size: 1.175em;
+  left: 0%;
+  top: 50%;
+  translate: 0px -50%;
+  width: 0.75em;
+
+  transition: 50ms ease-in-out;
+}
+
+#toggleUnit input:checked ~ span::after {
+  content: "F";
+  translate: 1.05em -50%;
+}
+
+#toggleLocType {
+  border: 0.15em solid black;
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  width: 12.5em;
+  text-align: center;
 }
 
 @media (max-width: 500px) {

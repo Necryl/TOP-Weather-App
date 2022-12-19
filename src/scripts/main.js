@@ -7,6 +7,11 @@ import forecastStyles from "./../styles/forecast.css";
 import detailsStyles from "./../styles/details.css";
 
 // elements
+const nameInputElem = document.querySelector("#nameInput");
+const latLonInputsElem = document.querySelector("#lat-lon-inputs");
+const toggleUnitInputElem = document.querySelector("#toggleUnit input");
+const toggleLocTypeInputElem = document.querySelector("#toggleLocType input");
+const toggleLocTypeSpanElem = document.querySelector("#toggleLocType span");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
@@ -79,6 +84,18 @@ const loader = (() => {
 })();
 
 const UI = (() => {
+  toggleLocTypeInputElem.addEventListener("input", (event) => {
+    if (event.target.checked) {
+      toggleLocTypeSpanElem.textContent = "Use location name";
+      nameInputElem.classList.add("hide");
+      latLonInputsElem.classList.remove("hide");
+    } else {
+      toggleLocTypeSpanElem.textContent = "Use latitude and longitude";
+      nameInputElem.classList.remove("hide");
+      latLonInputsElem.classList.add("hide");
+    }
+  });
+
   function initialize() {}
 
   return {
@@ -131,6 +148,9 @@ const Data = (() => {
 })();
 
 // events
+toggleUnitInputElem.addEventListener("input", (event) => {
+  units = event.target.checked ? "imperial" : "metric"; // metric = celsius, imperial = fahrenheit
+});
 
 // run on start
 UI.initialize();
