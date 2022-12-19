@@ -31,7 +31,7 @@
 
 #buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto auto;
   gap: 1em;
 }
 
@@ -50,7 +50,7 @@
 #options {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: auto auto auto;
+  grid-template-areas: "T U L";
   justify-content: center;
   align-items: center;
   gap: 1em;
@@ -59,10 +59,16 @@
   user-select: none;
 }
 
+#options > span {
+  grid-area: T;
+}
+
 #toggleUnit {
+  grid-area: U;
   text-align: center;
   display: grid;
   align-items: center;
+  width: max-content;
 }
 
 #toggleUnit span {
@@ -73,6 +79,7 @@
 
   padding: 0.05em 0.35em;
   border-radius: 0.3em;
+  font-size: 0.8em;
 }
 
 #toggleUnit span::after {
@@ -81,7 +88,7 @@
   background-color: red;
   padding: 0.1em 0.3em;
   border-radius: 0.3em;
-  font-size: 1.175em;
+  font-size: 1.2em;
   left: 0%;
   top: 50%;
   translate: 0px -50%;
@@ -96,6 +103,7 @@
 }
 
 #toggleLocType {
+  grid-area: L;
   border: 0.15em solid black;
   padding: 0.1em 0.3em;
   border-radius: 0.3em;
@@ -106,5 +114,11 @@
 @media (max-width: 500px) {
   #searchInputs {
     width: 100%;
+  }
+
+  #options {
+    grid-template-areas:
+      "T U"
+      "L L";
   }
 }
