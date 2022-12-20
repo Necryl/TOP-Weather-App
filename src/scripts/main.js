@@ -11,6 +11,8 @@ const bodyElem = document.querySelector("body");
 
 const nameInputElem = document.querySelector("#nameInput");
 const latLonInputsElem = document.querySelector("#lat-lon-inputs");
+const latInputElem = document.querySelector("#latInput");
+const lonInputElem = document.querySelector("#lonInput");
 const inputElems = [nameInputElem, ...latLonInputsElem.children];
 const searchBtnElem = document.querySelector("#search");
 const toggleUnitInputElem = document.querySelector("#toggleUnit input");
@@ -100,6 +102,77 @@ const UI = (() => {
     }
   });
 
+  async function validateInput() {
+    let result = true;
+    const inputs = toggleLocTypeInputElem.checked
+      ? [...latLonInputsElem.children]
+      : [nameInputElem];
+    for (let i = 0; i < inputs.length; i++) {
+      const input = inputs[i];
+      input.setCustomValidity("");
+      if (input.value.trim() === "") {
+        input.setCustomValidity("This cannot be empty");
+        input.reportValidity();
+        result = false;
+        break;
+      }
+      if (input.validity.valid === false) {
+        input.setCustomValidity(
+          input === nameInputElem
+            ? "Please enter a valid location name"
+            : "Please enter a valid decimal"
+        );
+        input.reportValidity();
+        result = false;
+        break;
+      }
+    }
+    if (result === true) {
+      if (toggleLocTypeInputElem.checked) {
+        // eslint-disable-next-line no-use-before-define
+        const data = await Data.fetchWeather(
+          latInputElem.value.trim(),
+          lonInputElem.value.trim()
+        );
+      } else {
+        // eslint-disable-next-line no-use-before-define
+        const data = await Data.convertToCoordinates(
+          nameInputElem.value.trim()
+        );
+        console.log(data);
+        if (data.length === 0) {
+          nameInputElem.setCustomValidity(
+            "Couldn't find a match, are you sure the spelling is correct?"
+          );
+          nameInputElem.reportValidity();
+          result = false;
+        }
+      }
+    }
+    return result;
+  }
+
+  searchBtnElem.addEventListener("click", async () => {
+    const ready = await validateInput();
+    if (ready) {
+      bodyElem.classList.add("display");
+    }
+  });
+
+  inputElems.forEach((elem) => {
+    elem.addEventListener("focus", () => {
+      bodyElem.classList.remove("display");
+    });
+    elem.addEventListener("input", () => {
+      elem.setCustomValidity("");
+    });
+    elem.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        searchBtnElem.click();
+      }
+    });
+  });
+
   function initialize() {}
 
   return {
@@ -132,6 +205,7 @@ const Data = (() => {
   }
 
   async function fetchWeather(lat, lon) {
+    console.log("fetchWeather fetching...");
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
     const result = await fetch(url, { mode: "cors" })
       .then((response) => response.json())
@@ -154,16 +228,6 @@ const Data = (() => {
 // events
 toggleUnitInputElem.addEventListener("input", (event) => {
   units = event.target.checked ? "imperial" : "metric"; // metric = celsius, imperial = fahrenheit
-});
-
-searchBtnElem.addEventListener("click", () => {
-  bodyElem.classList.add("display");
-});
-
-inputElems.forEach((elem) => {
-  elem.addEventListener("focus", () => {
-    bodyElem.classList.remove("display");
-  });
 });
 
 // run on start
