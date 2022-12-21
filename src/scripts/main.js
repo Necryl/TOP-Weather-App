@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
+import _ from "lodash";
 import mainStyles from "./../styles/main.css";
 import inputStyles from "./../styles/input.css";
 import currentStyles from "./../styles/current.css";
@@ -18,6 +19,8 @@ const searchBtnElem = document.querySelector("#search");
 const toggleUnitInputElem = document.querySelector("#toggleUnit input");
 const toggleLocTypeInputElem = document.querySelector("#toggleLocType input");
 const toggleLocTypeSpanElem = document.querySelector("#toggleLocType span");
+
+const currentElem = document.querySelector("#current");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
@@ -182,41 +185,63 @@ const UI = (() => {
 })();
 
 const Data = (() => {
+  const dataHistory = {};
+  const nameHistory = {};
+
   async function convertToCoordinates(input) {
-    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&appid=${key}`;
-    const result = await fetch(url, { mode: "cors" })
-      .then((response) => response.json())
-      .then((data) =>
-        data.reduce((final, current) => {
-          console.count(`Result counter for '${input}'`);
-          final.push([
-            current.lat,
-            current.lon,
-            current.name,
-            current.state,
-            current.country,
-          ]);
-          return final;
-        }, [])
-      )
-      .catch((msg) => {
-        throw Error(msg);
-      });
+    let result;
+    if (_.includes(Object.keys(nameHistory), input)) {
+      result = nameHistory[input];
+    } else {
+      const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&appid=${key}`;
+      result = await fetch(url, { mode: "cors" })
+        .then((response) => response.json())
+        .then((data) =>
+          data.reduce((final, current) => {
+            console.count(`Result counter for '${input}'`);
+            final.push([
+              current.lat,
+              current.lon,
+              current.name,
+              current.state,
+              current.country,
+            ]);
+            return final;
+          }, [])
+        )
+        .catch((msg) => {
+          throw Error(msg);
+        });
+      nameHistory[input] = result;
+    }
     return result;
   }
 
   async function fetchWeather(lat, lon) {
     console.log("fetchWeather fetching...");
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
-    const result = await fetch(url, { mode: "cors" })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        return data;
-      })
-      .catch((msg) => {
-        throw Error(msg);
-      });
+    let result;
+    if (
+      _.includes(Object.keys(dataHistory), `${lat}, ${lon}`) &&
+      dataHistory[[lat, lon]].timedOut === false
+    ) {
+      result = dataHistory[[lat, lon]];
+    } else {
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
+      result = await fetch(url, { mode: "cors" })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          return data;
+        })
+        .catch((msg) => {
+          throw Error(msg);
+        });
+      dataHistory[[lat, lon]] = result;
+      dataHistory[[lat, lon]].timedOut = false;
+      setTimeout(() => {
+        dataHistory[[lat, lon]].timedOut = true;
+      }, 600000);
+    }
     return result;
   }
 
