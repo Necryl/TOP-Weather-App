@@ -168,6 +168,7 @@ const UI = (() => {
     });
     elem.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
+        elem.blur();
         searchBtnElem.click();
       }
     });
