@@ -191,8 +191,12 @@ const Data = (() => {
   async function convertToCoordinates(input) {
     let result;
     if (_.includes(Object.keys(nameHistory), input)) {
+      console.log("convertToCoordinates() found an entry in history");
       result = nameHistory[input];
     } else {
+      console.log(
+        "convertToCoordinates() didn't find an entry in history, fetching new data from OpenWeather API"
+      );
       const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&appid=${key}`;
       result = await fetch(url, { mode: "cors" })
         .then((response) => response.json())
@@ -220,12 +224,13 @@ const Data = (() => {
   async function fetchWeather(lat, lon) {
     console.log("fetchWeather fetching...");
     let result;
-    if (
-      _.includes(Object.keys(dataHistory), `${lat}, ${lon}`) &&
-      dataHistory[[lat, lon]].timedOut === false
-    ) {
+    if (_.includes(Object.keys(dataHistory), `${lat}, ${lon}`)) {
+      console.log("fetchWEather() found a entry in history");
       result = dataHistory[[lat, lon]];
     } else {
+      console.log(
+        "fetchWeather() didn't find an entry in history, fetching new data from OpenWeather API"
+      );
       const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
       result = await fetch(url, { mode: "cors" })
         .then((response) => response.json())
@@ -237,10 +242,9 @@ const Data = (() => {
           throw Error(msg);
         });
       dataHistory[[lat, lon]] = result;
-      dataHistory[[lat, lon]].timedOut = false;
       setTimeout(() => {
-        dataHistory[[lat, lon]].timedOut = true;
-      }, 600000);
+        delete dataHistory[[lat, lon]];
+      }, 600000); // removes the entry after 10 minutes. OpenWeather API only updates the data every 10 minutes.
     }
     return result;
   }
