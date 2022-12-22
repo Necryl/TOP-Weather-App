@@ -1,0 +1,58 @@
+-----------------------Data ordered-----------------------
+name
+sys.country
+coord.lat
+coord.lon
+dt (time of data calculation, UTC)
+timezone (shift in seconds from UTC)
+
+weather.description ('light rain')
+main.feels_like
+main.temp
+main.temp_min
+main.temp_max
+main.humidity
+main.pressure atmospheric pressure
+visibility
+
+clouds.all (cloudiness percent)
+sys.sunrise (sunrise time)
+sys.sunset (sunset time)
+
+rain.1h (rain volume for the last 1 hour in mm)
+rain.3h (rain volume for the last 3 hour in mm)
+
+snow.1h (snow volume for the last 1 hour in mm)
+snow.3h (snow volume for the last 3 hour in mm)
+
+
+
+-----------------------All Data (unordered)-----------------------
+coord.lat
+coord.lon
+weather.main (Rain, Snow, etc)
+weather.description ('light rain')
+weather.icon '10n'
+
+main.temp
+main.feels_like
+main.pressure atmospheric pressure
+main.humidity
+main.temp_min
+main.temp_max
+main.sea_level
+main.grnd_level
+visibility
+wind.speed
+wind.deg (direction in degrees)
+wind.gust
+clouds.all (cloudiness percent)
+rain.1h (rain volume for the last 1 hour in mm)
+rain.3h (rain volume for the last 3 hour in mm)
+snow.1h (snow volume for the last 1 hour in mm)
+snow.3h (snow volume for the last 3 hour in mm)
+dt (time of data calculation, UTC)
+sys.country
+sys.sunrise (sunrise time)
+sys.sunset (sunset time)
+timezone (shift in seconds from UTC)
