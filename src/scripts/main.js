@@ -3,9 +3,7 @@
 import _ from "lodash";
 import mainStyles from "./../styles/main.css";
 import inputStyles from "./../styles/input.css";
-import currentStyles from "./../styles/current.css";
-import forecastStyles from "./../styles/forecast.css";
-import detailsStyles from "./../styles/details.css";
+import locationStyles from "./../styles/location.css";
 
 // elements
 const bodyElem = document.querySelector("body");
@@ -20,7 +18,7 @@ const toggleUnitInputElem = document.querySelector("#toggleUnit input");
 const toggleLocTypeInputElem = document.querySelector("#toggleLocType input");
 const toggleLocTypeSpanElem = document.querySelector("#toggleLocType span");
 
-const currentElem = document.querySelector("#current");
+const locationElem = document.querySelector("#location");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
@@ -175,12 +173,13 @@ const UI = (() => {
     const ready = await validateInput();
     if (ready) {
       bodyElem.classList.add("display");
+      // eslint-disable-next-line no-use-before-define
       const data = await Data.fetchWeather(
         latInputElem.value.trim(),
         lonInputElem.value.trim()
       );
       nameInputElem.value = data.name;
-      document.querySelector("#current > span").textContent =
+      document.querySelector("#location > span").textContent =
         JSON.stringify(data);
     }
   });
