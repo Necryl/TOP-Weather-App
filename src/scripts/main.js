@@ -137,6 +137,19 @@ const UI = (() => {
           latInputElem.value.trim(),
           lonInputElem.value.trim()
         );
+        if (data.cod === "400") {
+          console.log(`Error [400]: ${data.message}`);
+          if (data.message.includes("latitude")) {
+            latInputElem.setCustomValidity(data.message);
+            latInputElem.reportValidity();
+          } else if (data.message.includes("longitude")) {
+            lonInputElem.setCustomValidity(data.message);
+            lonInputElem.reportValidity();
+          }
+          result = false;
+        } else {
+          nameInputElem.value = data.name;
+        }
       } else {
         // eslint-disable-next-line no-use-before-define
         const data = await Data.convertToCoordinates(
@@ -149,6 +162,9 @@ const UI = (() => {
           );
           nameInputElem.reportValidity();
           result = false;
+        } else {
+          [[latInputElem.value, lonInputElem.value, nameInputElem.value]] =
+            data;
         }
       }
     }
@@ -159,6 +175,13 @@ const UI = (() => {
     const ready = await validateInput();
     if (ready) {
       bodyElem.classList.add("display");
+      const data = await Data.fetchWeather(
+        latInputElem.value.trim(),
+        lonInputElem.value.trim()
+      );
+      nameInputElem.value = data.name;
+      document.querySelector("#current > span").textContent =
+        JSON.stringify(data);
     }
   });
 
@@ -189,6 +212,7 @@ const Data = (() => {
   const nameHistory = {};
 
   async function convertToCoordinates(input) {
+    input = input.toLowerCase();
     let result;
     if (_.includes(Object.keys(nameHistory), input)) {
       console.log("convertToCoordinates() found an entry in history");
@@ -224,8 +248,8 @@ const Data = (() => {
   async function fetchWeather(lat, lon) {
     console.log("fetchWeather fetching...");
     let result;
-    if (_.includes(Object.keys(dataHistory), `${lat}, ${lon}`)) {
-      console.log("fetchWEather() found a entry in history");
+    if (_.includes(Object.keys(dataHistory), `${lat},${lon}`)) {
+      console.log("fetchWeather() found an entry in history");
       result = dataHistory[[lat, lon]];
     } else {
       console.log(
@@ -244,6 +268,7 @@ const Data = (() => {
       dataHistory[[lat, lon]] = result;
       setTimeout(() => {
         delete dataHistory[[lat, lon]];
+        console.log(`deleted '${lat},${lon}' from history:`, dataHistory);
       }, 600000); // removes the entry after 10 minutes. OpenWeather API only updates the data every 10 minutes.
     }
     return result;
