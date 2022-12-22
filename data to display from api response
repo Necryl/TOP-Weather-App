@@ -14,10 +14,10 @@ main.temp_max
 main.humidity
 main.pressure atmospheric pressure
 visibility
-
 clouds.all (cloudiness percent)
 sys.sunrise (sunrise time)
 sys.sunset (sunset time)
+
 
 rain.1h (rain volume for the last 1 hour in mm)
 rain.3h (rain volume for the last 3 hour in mm)
