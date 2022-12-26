@@ -19,6 +19,29 @@ const toggleLocTypeInputElem = document.querySelector("#toggleLocType input");
 const toggleLocTypeSpanElem = document.querySelector("#toggleLocType span");
 
 const locationElem = document.querySelector("#location");
+const countryNameDisplayElem = document.querySelector("#countryName");
+const coordsDisplayElems = [
+  document.querySelector("#coords > #lat"),
+  document.querySelector("#coords > #lon"),
+];
+const dateTimeDisplayElem = document.querySelector("#dateTime");
+const timeZoneDisplayElem = document.querySelector("#timeZone");
+
+const weatherElem = document.querySelector("#weather");
+const descDisplayElem = document.querySelector("#desc");
+const tempDisplayElem = document.querySelector("#temp");
+const tempMinDisplayElem = document.querySelector("#temp_min");
+const tempMaxDisplayELem = document.querySelector("#temp_max");
+const humidityDisplayELem = document.querySelector("#humidity");
+const pressureDisplayElem = document.querySelector("#pressure");
+const visibilityDisplayELem = document.querySelector("#visibility");
+const cloudsDisplayElem = document.querySelector("#clouds");
+const sunDisplayElem = document.querySelector("#sun");
+const sunriseDisplayElem = document.querySelector("#sun #rise");
+const sunsetDisplayElem = document.querySelector("#sun #set");
+
+const rainElem = document.querySelector("#rain");
+const snowElem = document.querySelector("#snow");
 
 // config variables
 const key = "3602d3a3f6d0872ec04e0053d57c62b2";
