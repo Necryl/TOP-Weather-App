@@ -29,12 +29,13 @@ const timeZoneDisplayElem = document.querySelector("#timeZone");
 
 const weatherElem = document.querySelector("#weather");
 const descDisplayElem = document.querySelector("#desc");
+const feelsDisplayElem = document.querySelector("#feels");
 const tempDisplayElem = document.querySelector("#temp");
 const tempMinDisplayElem = document.querySelector("#temp_min");
-const tempMaxDisplayELem = document.querySelector("#temp_max");
-const humidityDisplayELem = document.querySelector("#humidity");
+const tempMaxDisplayElem = document.querySelector("#temp_max");
+const humidityDisplayElem = document.querySelector("#humidity");
 const pressureDisplayElem = document.querySelector("#pressure");
-const visibilityDisplayELem = document.querySelector("#visibility");
+const visibilityDisplayElem = document.querySelector("#visibility");
 const cloudsDisplayElem = document.querySelector("#clouds");
 const sunDisplayElem = document.querySelector("#sun");
 const sunriseDisplayElem = document.querySelector("#sun #rise");
@@ -202,8 +203,7 @@ const UI = (() => {
         lonInputElem.value.trim()
       );
       nameInputElem.value = data.name;
-      document.querySelector("#location > span").textContent =
-        JSON.stringify(data);
+      displayData(data);
     }
   });
 
@@ -221,6 +221,36 @@ const UI = (() => {
       }
     });
   });
+
+  function displayData(data) {
+    countryNameDisplayElem.textContent = data.sys.country;
+    coordsDisplayElems[0].textContent = `lat: ${data.coord.lat}`;
+    coordsDisplayElems[1].textContent = `lon: ${data.coord.lon}`;
+    dateTimeDisplayElem.textContent = `time of calculation: ${new Date(
+      data.dt * 1000
+    ).toTimeString()}`;
+    timeZoneDisplayElem.textContent = `timezone: ${data.timezone}`;
+
+    descDisplayElem.textContent = data.weather[0].description;
+    feelsDisplayElem.textContent = `feels like: ${data.main.feels_like}`;
+    tempDisplayElem.textContent = `temp: ${data.main.temp}`;
+    tempMinDisplayElem.textContent = `min temp: ${data.main.temp_min}`;
+    tempMaxDisplayElem.textContent = `max temp: ${data.main.temp_max}`;
+    humidityDisplayElem.textContent = `humidity: ${data.main.humidity}`;
+    pressureDisplayElem.textContent = `pressure: ${data.main.pressure}`;
+    visibilityDisplayElem.textContent = `visibility: ${data.visibility}`;
+    cloudsDisplayElem.textContent = `clouds: ${data.clouds.all}`;
+    sunriseDisplayElem.textContent = `sunrise: ${data.sys.sunrise}`;
+    sunsetDisplayElem.textContent = `sunset: ${data.sys.sunset}`;
+    if (data.rain) {
+      rainElem.children[0].textContent = `rain in past 1h: ${data.rain["1h"]}`;
+      rainElem.children[1].textContent = `rain in past 3h: ${data.rain["3h"]}`;
+    }
+    if (data.snow) {
+      snowElem.children[0].textContent = `snow in past 1h: ${data.snow["1h"]}`;
+      snowElem.children[1].textContent = `snow in past 3h: ${data.snow["3h"]}`;
+    }
+  }
 
   function initialize() {}
 
