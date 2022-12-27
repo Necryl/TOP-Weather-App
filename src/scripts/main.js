@@ -226,9 +226,11 @@ const UI = (() => {
     countryNameDisplayElem.textContent = data.sys.country;
     coordsDisplayElems[0].textContent = `lat: ${data.coord.lat}`;
     coordsDisplayElems[1].textContent = `lon: ${data.coord.lon}`;
-    dateTimeDisplayElem.textContent = `time of calculation: ${new Date(
-      data.dt * 1000
-    ).toTimeString()}`;
+
+    let time = new Date(data.dt * 1000).toTimeString();
+    time = time.split(":");
+    time = `${time[0]}:${time[1]}`;
+    dateTimeDisplayElem.textContent = `time of calculation: ${time}`;
     timeZoneDisplayElem.textContent = `timezone: ${data.timezone}`;
 
     descDisplayElem.textContent = data.weather[0].description;
@@ -300,14 +302,17 @@ const Data = (() => {
   async function fetchWeather(lat, lon) {
     console.log("fetchWeather fetching...");
     let result;
-    if (_.includes(Object.keys(dataHistory), `${lat},${lon}`)) {
+    if (
+      _.includes(Object.keys(dataHistory), `${lat},${lon}`) &&
+      dataHistory[[lat, lon]].url.units === units
+    ) {
       console.log("fetchWeather() found an entry in history");
-      result = dataHistory[[lat, lon]];
+      result = dataHistory[[lat, lon]].data;
     } else {
       console.log(
         "fetchWeather() didn't find an entry in history, fetching new data from OpenWeather API"
       );
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`;
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}&units=${units}`;
       result = await fetch(url, { mode: "cors" })
         .then((response) => response.json())
         .then((data) => {
@@ -317,12 +322,23 @@ const Data = (() => {
         .catch((msg) => {
           throw Error(msg);
         });
-      dataHistory[[lat, lon]] = result;
+      dataHistory[[lat, lon]] = { data: result, url: getURLvars(url) };
       setTimeout(() => {
         delete dataHistory[[lat, lon]];
         console.log(`deleted '${lat},${lon}' from history:`, dataHistory);
       }, 600000); // removes the entry after 10 minutes. OpenWeather API only updates the data every 10 minutes.
     }
+    return result;
+  }
+
+  function getURLvars(url) {
+    const vars = url.split("?")[1].split("&");
+    const result = {};
+    vars.forEach((property) => {
+      property = property.split("=");
+      // eslint-disable-next-line prefer-destructuring
+      result[property[0]] = property[1];
+    });
     return result;
   }
 
